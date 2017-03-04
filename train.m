@@ -5,13 +5,14 @@ function[] = train()
     nonskinPixels = 0;
     numTable(2, 1:32, 1:32, 1:32) = 0;
     SPM(1:32, 1:32, 1:32) = 0;
-    for i = 1 : 256
-        quantizationTable(i) = floor((i-1)/8) + 1;
+    quantizationTable = linspace(0,0,8);
+	for i = 1 : 32
+        quantizationTable = [quantizationTable, linspace(i,i,8)];
     end
 
-    files = dir('*_skin.jpg');
+    files = dir('*_skin.tif');
     skinPixels = skinPixels + recordPixels(files, 1);
-    files = dir('*_nonskin.jpg');
+    files = dir('*_nonskin.tif');
     nonskinPixels = skinPixels + recordPixels(files, 2);
 
     creatSPM();
@@ -22,7 +23,7 @@ function[pixelNum] = recordPixels(files, n)  %n==1:skin n==2:nonskin
     for i = 1 : length(files)
         s = files(i).name;
         img = imread(s);
-        colourPixels = img(:,:,1) ~= 0 & img(:,:,2) ~= 0 & img(:,:,3) ~= 0;
+        colourPixels = img(:,:,4) ~= 0;
         [x,y] = size(colourPixels);
         img = changeQuantizationLevel(img, x, y);
         pixelNum = sum(sum(colourPixels));
